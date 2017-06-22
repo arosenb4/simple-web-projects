@@ -12,6 +12,7 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 
 
 </head>
@@ -41,10 +42,8 @@
 				<div class="row" style="padding-top:12px;">
 					<button type="submit">Count Words</button>
 				</div>
-
-				<div id="output" class="col-lg-12" style="padding-top:36px;">
-					<table></table>
-				</div>
+          
+        <div id="chartDiv" style="padding-top:48px;"> </div>
 			</center>
 		</div>
 
@@ -61,9 +60,8 @@
 <script>
 $(document).ready(function(){
 
+
     $("button").click(function(){
-      $("#output").empty();
-      $("#output").append("<hr />")
       // -- read in textbody from text area
         var textBody = $("#textBody").val().replace(/[.,!?;-]/g, '').split(" ");
       var dict = {}
@@ -89,16 +87,45 @@ $(document).ready(function(){
         return a[0] - b[0];
       });
 
-      // -- append the k/v pair to table
-      var table = $('<table></table>').addClass('table');
-      for(index in sortable){
-        var td1 = '<td style="text-align:left;">' + sortable[index][0] +  '</td>';
-        var td2 = '<td style="text-align:right;">' + sortable[index][1] +  '</td>';
-        var row = $('<tr></tr>').append(td1 + td2);
-        table.append(row);
-      }
-      $('#output').append(table);
 
+      var x = [], y = [];
+      for(index in sortable){
+        x.push(sortable[index][1]);
+        y.push(sortable[index][0]);
+      }
+
+
+      var chartData = {
+
+            "type": "bar",
+            "title": { "text": "Word Use vs Frequency" },
+            "scale-x": {
+                "zooming": true,
+                "zoom-to": [0, 10],
+              "labels": x ,
+							"item" : { "font-angle":45 }
+              },
+            "scroll-x": {
+                "bar": {
+                      "background-color": "#DCEDC8",
+                      "alpha": 0.5
+                    },
+                "handle": {
+                      "background-color": "#8BC34A"
+                    }
+              },
+            "series": [{
+                "values": y 
+              }]
+
+
+          };
+          zingchart.render({ // Render Method[3]
+            id: "chartDiv",
+            data: chartData,
+            height: 400,
+            width: '100%'
+          });
 
     });
 });
