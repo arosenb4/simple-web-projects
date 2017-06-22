@@ -30,20 +30,19 @@
 		<div class="jumbotron">
 			<h2>Word Frequency Counter</h2>
 			<p class="lead"> A primitive text area and input button facilitate an understanding of HashMaps utilizing Javascript Objects and sorting on both primary and secondary keys.</p>
-			<!--  <p><a class="btn btn-lg btn-success" href="#" role="button">Sign up today</a></p> -->
 		</div>
 		<hr />
 
 		<div class="row marketing">
 			<center>
 				<div class="row">
-					<textarea id="textBody" rows="8" cols="48">And the Raven, never flitting, still is sitting, still is sitting On the pallid bust of Pallas just above my chamber door; And his eyes have all the seeming of a demon’s that is dreaming, And the lamp-light o’er him streaming throws his shadow on the floor; And my soul from out that shadow that lies floating on the floor Shall be lifted - nevermore!</textarea>
+					<textarea id="textBody" class="form-control" rows="9" cols="36">And the Raven, never flitting, still is sitting, still is sitting On the pallid bust of Pallas just above my chamber door; And his eyes have all the seeming of a demon’s that is dreaming, And the lamp-light o’er him streaming throws his shadow on the floor; And my soul from out that shadow that lies floating on the floor Shall be lifted - nevermore!</textarea>
 				</div>
-				<div class="row" style="padding-top:12px;">
-					<button type="submit">Count Words</button>
+				<div class="row" style="padding-top:27px;">
+          <p><a id="getCount" class="btn btn-lg btn-info" role="button">Count Words</a></p>
 				</div>
           
-        <div id="chartDiv" style="padding-top:48px;"> </div>
+        <div id="chartDiv" data-scroll-speed="1" style="padding-top:48px; padding-bottom:48px;"> </div>
 			</center>
 		</div>
 
@@ -61,9 +60,15 @@
 $(document).ready(function(){
 
 
-    $("button").click(function(){
+    $("#getCount").click(function(){
+			// -- scroll to the chart once button is selected
+			$('html,body').animate({
+				 scrollTop: $("#chartDiv").offset().top
+			});
+
+
       // -- read in textbody from text area
-        var textBody = $("#textBody").val().replace(/[.,!?;-]/g, '').split(" ");
+			var textBody = $("#textBody").val().replace(/[.,!?;-]/g, '').split(" ");
       var dict = {}
       for(word in textBody){
         if(textBody[word] in dict){
@@ -88,6 +93,7 @@ $(document).ready(function(){
       });
 
 
+			// -- format the results for plotting
       var x = [], y = [];
       for(index in sortable){
         x.push(sortable[index][1]);
@@ -96,16 +102,25 @@ $(document).ready(function(){
 
 
       var chartData = {
-
             "type": "bar",
             "title": { "text": "Word Use vs Frequency" },
             "scale-x": {
                 "zooming": true,
                 "zoom-to": [0, 10],
               "labels": x ,
-							"item" : { "font-angle":45 }
+							"item" : { "font-angle":65, "font-size":"16px;" }
               },
+
+            "scale-y": {
+							"item" : { "font-size":"16px;" }
+              },
+
+            "plotarea":{  
+                    "background-color":"#fff",  
+                    "margin-bottom": "180px;"
+            },
             "scroll-x": {
+                "height": "32px",
                 "bar": {
                       "background-color": "#DCEDC8",
                       "alpha": 0.5
@@ -120,13 +135,13 @@ $(document).ready(function(){
 
 
           };
+					// -- plot the results
           zingchart.render({ // Render Method[3]
             id: "chartDiv",
             data: chartData,
             height: 400,
             width: '100%'
           });
-
     });
 });
 </script>
