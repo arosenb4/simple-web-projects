@@ -20,9 +20,7 @@
     <!-- Custom styles for this template -->
     <link href="css/cover.css" rel="stylesheet">
     <link href="css/weather-icons.min.css" rel="stylesheet">
-
   </head>
-
   <body>
     <div class="site-wrapper">
       <div class="site-wrapper-inner">
@@ -49,16 +47,14 @@
           <div class="inner cover">
             <!-- Icon For current weather -->
             <h1 class="cover-heading" style="padding-bottom:24px;"><i id="icon" style="font-size: 160px; padding-top:27px;" class="wi wi-cloud-down"></i></h1>
-
-            <!-- Progress Bar -->
             <div class="progress">
-              <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width:10%">
-              </div>
+              <!-- Progress Bar -->
+              <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width:10%"> </div>
             </div>
+            <!-- Summary and Temperature -->
             <div id="summary" class="lead" style="font-size:24px; padding-top:18px;"> </div>
             <div id="temperature" class="cover-heading" style="padding-left: 10px; font-size:48px; font-weight:bold;"> </div>
           </div>
-
           <!-- Footer and copyright -->
           <div class="mastfoot" style="bottom:0; position:fixed;">
             <div class="inner">
@@ -70,15 +66,67 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- js here (as opposed to an external script.js) for quick referencing -->
     <script>
+      function swapIcon(element, prevIcon, nextIcon){
+        // -- TODO: change to map/Object
+        $(element).removeClass(prevIcon);
+        switch(nextIcon){
+          case "partly-cloudy-night":  $("#icon").addClass("wi wi-night-partly-cloudy"); break;
+          case "partly-cloudy-day"  :  $("#icon").addClass("wi wi-day-cloudy-high"); break;
+          case "thunderstorm"       :  $("#icon").addClass("wi wi-thunderstorm"); break;
+          case "clear-night"        :  $("#icon").addClass("wi wi-night-clear"); break;
+          case "clear-day"          :  $("#icon").addClass("wi wi-day-sunny"); break;
+          case "tornado":  $("#icon").addClass("wi wi-tornado"); break;
+          case "cloudy" :  $("#icon").addClass("wi wi-cloudy" ); break;
+          case "sleet"  :  $("#icon").addClass("wi wi-sleet"  ); break;
+          case "rain"   :  $("#icon").addClass("wi wi-rain"); break;
+          case "snow"   :  $("#icon").addClass("wi wi-snow"); break;
+          case "wind"   :  $("#icon").addClass("wi wi-windy"); break;
+          case "hail"   :  $("#icon").addClass("wi wi-hail"); break;
+          case "fog"    :  $("#icon").addClass("wi wi-fog"); break;
+        }
+        return nextIcon;
+      }
 
-      // -- reorganize this javascript
+      function fetchWeather(API_Url){
+        // -- make API call -- no keyless weather API available 
+        $.ajax({
+          url : API_Url,
+          dataType: "jsonp",
+          success: updateWeather //forward reference to fxn 
+        });    
+      }
+
+      function updateWeather (data){
+        // -- replace downloading icon with correct weather icon 
+        var temperature = data.currently.apparentTemperature;
+        var summary = data.hourly.summary;
+
+        swapIcon("#icon", "wi wi-cloud-down", data.hourly.icon);
+        
+        // -- quick hack to fade summary and temp in 
+        $("#summary").fadeOut(0);
+        $("#temperature").fadeOut(0);
+
+        // -- append the temperature data to screen
+        var farh = '<i style="font-size: 64px; padding-left:10px;" class="wi wi-fahrenheit"><//i>' 
+        $("#summary").append(summary);
+        $("#temperature").append(temperature);
+        $("#temperature").append(farh);
+
+        // -- make information visible to screen
+        $("#icon").fadeIn(2000);
+        $("#summary").fadeIn(2000);
+        $("#temperature").fadeIn(2000);
+      }
+
       $(document).ready(function(){
         // -- Fetch Geo Data and Display Progress Bar
         var lat, lon;
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
-              // -- display progess
+              // -- display progess (A bit of a hack - but the user needs something to look at)
               $(".progress-bar").animate({width:'100%'}, "slow");
               $(".progress").fadeOut(2000);
               lat = position.coords.latitude;
@@ -86,58 +134,11 @@
 
               // --  swap out icon and fetch weather -- nested callback
               $("#icon").fadeOut(2000, function(){
-
-                // -- no keyless weather API available 
-                var API_Url = "https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lon;
-
-                // -- make API call 
-                $.ajax({
-                  url : API_Url,
-                  dataType: "jsonp",
-                  success: updateWeather //forward reference to fxn 
-                })    
-
-                function updateWeather (data){
-                  // -- replace downloading icon with correct weather icon 
-                  var icon = data.hourly.icon;
-                  var temperature = data.currently.apparentTemperature;
-                  var summary = data.hourly.summary;
-
-                  // -- TODO: change to map/Object
-                  $("#icon").removeClass("wi wi-cloud-down");
-                  switch(icon){
-                    case "partly-cloudy-night":  $("#icon").addClass("wi wi-night-partly-cloudy"); break;
-                    case "partly-cloudy-day"  :  $("#icon").addClass("wi wi-day-cloudy-high"); break;
-                    case "thunderstorm"       :  $("#icon").addClass("wi wi-thunderstorm"); break;
-                    case "clear-night"        :  $("#icon").addClass("wi wi-night-clear"); break;
-                    case "clear-day"          :  $("#icon").addClass("wi wi-day-sunny"); break;
-                    case "tornado":  $("#icon").addClass("wi wi-tornado"); break;
-                    case "cloudy" :  $("#icon").addClass("wi wi-cloudy" ); break;
-                    case "sleet"  :  $("#icon").addClass("wi wi-sleet"  ); break;
-                    case "rain"   :  $("#icon").addClass("wi wi-rain"); break;
-                    case "snow"   :  $("#icon").addClass("wi wi-snow"); break;
-                    case "wind"   :  $("#icon").addClass("wi wi-windy"); break;
-                    case "hail"   :  $("#icon").addClass("wi wi-hail"); break;
-                    case "fog"    :  $("#icon").addClass("wi wi-fog"); break;
-                  }
-                  var farh = '<i style="font-size: 64px; padding-left:10px;" class="wi wi-fahrenheit"><//i>' 
-                  $("#summary").append(summary);
-                  $("#temperature").append(temperature);
-                  $("#temperature").append(farh);
-
-                  // -- quick hack to fade summary and temp in 
-                  $("#summary").fadeOut(0);
-                  $("#temperature").fadeOut(0);
-
-                  $("#icon").fadeIn(2000);
-                  $("#summary").fadeIn(2000);
-                  $("#temperature").fadeIn(2000);
-                }
+                fetchWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lon);
               });
             });
         }
       });
-
     </script>
   </body>
 </html>

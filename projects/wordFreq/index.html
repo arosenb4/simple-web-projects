@@ -13,11 +13,9 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
-
-
 </head>
 <body>
-<div class="container">
+  <div class="container">
 		<div class="header clearfix">
 			<nav>
 				<ul class="nav nav-pills pull-right">
@@ -32,7 +30,6 @@
 			<p class="lead"> A primitive text area and input button facilitate an understanding of HashMaps utilizing Javascript Objects and sorting on both primary and secondary keys.</p>
 		</div>
 		<hr />
-
 		<div class="row marketing">
 			<center>
 				<div class="row">
@@ -45,20 +42,14 @@
         <div id="chartDiv" data-scroll-speed="1" style="padding-top:48px; padding-bottom:48px;"> </div>
 			</center>
 		</div>
-
-
 		<footer class="footer">
 			<p>&copy; 2017 Adam Rosenbaum</p>
 		</footer>
-
 	</div> <!-- /container -->
 
-
-
-
-<script>
-$(document).ready(function(){
-
+  <!-- js here (as opposed to an external script.js) for quick referencing -->
+  <script>
+  $(document).ready(function(){
 
     $("#getCount").click(function(){
 			// -- scroll to the chart once button is selected
@@ -93,7 +84,7 @@ $(document).ready(function(){
       });
 
 
-			// -- format the results for plotting
+      // -- format the results for plotting
       var x = [], y = [];
       for(index in sortable){
         x.push(sortable[index][1]);
@@ -102,48 +93,47 @@ $(document).ready(function(){
 
 
       var chartData = {
-            "type": "bar",
-            "title": { "text": "Word vs Frequency" },
-            "scale-x": {
-                "zooming": true,
-                "zoom-to": [0, 10],
-              "labels": x ,
-							"item" : { "font-angle":65, "font-size":"16px;" }
-              },
-
-            "scale-y": {
-							"item" : { "font-size":"16px;" }
-              },
-
-            "plotarea":{  
-                    "background-color":"#fff",  
-                    "margin-bottom": "180px;"
+          "type": "bar",
+          "title": { "text": "Word vs Frequency" },
+          "scale-x": {
+              "zooming": true,
+              "zoom-to": [0, 10],
+            "labels": x ,
+            "item" : { "font-angle":65, "font-size":"16px;" }
             },
-            "scroll-x": {
-                "height": "32px",
-                "bar": {
-                      "background-color": "#DCEDC8",
-                      "alpha": 0.5
-                    },
-                "handle": {
-                      "background-color": "#8BC34A"
-                    }
-              },
-            "series": [{
-                "values": y 
-              }]
 
+          "scale-y": {
+            "item" : { "font-size":"16px;" }
+            },
 
-          };
-					// -- plot the results
-          zingchart.render({ // Render Method[3]
-            id: "chartDiv",
-            data: chartData,
-            height: 400,
-            width: '100%'
-          });
+          "plotarea":{  
+                  "background-color":"#fff",  
+                  "margin-bottom": "180px;"
+          },
+          "scroll-x": {
+              "height": "32px",
+              "bar": {
+                    "background-color": "#DCEDC8",
+                    "alpha": 0.5
+                  },
+              "handle": {
+                    "background-color": "#8BC34A"
+                  }
+            },
+          "series": [{
+              "values": y 
+            }]
+        };
+
+        // -- plot the results
+        zingchart.render({ // Render Method[3]
+          id: "chartDiv",
+          data: chartData,
+          height: 400,
+          width: '100%'
+        });
     });
-});
+  });
 </script>
 
 
