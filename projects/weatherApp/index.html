@@ -20,7 +20,6 @@
     <!-- Custom styles for this template -->
     <link href="css/cover.css" rel="stylesheet">
     <link href="css/weather-icons.min.css" rel="stylesheet">
-
   </head>
   <body>
     <div class="site-wrapper">
@@ -67,28 +66,25 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <!-- js here (as opposed to an external script.js) for quick referencing -->
-
     <script>
-
       function swapIcon(element, prevIcon, nextIcon){
         // -- TODO: change to map/Object
         $(element).removeClass(prevIcon);
         switch(nextIcon){
-          case "partly-cloudy-night":  $(element).addClass("wi wi-night-partly-cloudy"); break;
-          case "partly-cloudy-day"  :  $(element).addClass("wi wi-day-cloudy-high"); break;
-          case "thunderstorm"       :  $(element).addClass("wi wi-thunderstorm"); break;
-          case "clear-night"        :  $(element).addClass("wi wi-night-clear"); break;
-          case "clear-day"          :  $(element).addClass("wi wi-day-sunny"); break;
-          case "tornado":  $(element).addClass("wi wi-tornado"); break;
-          case "cloudy" :  $(element).addClass("wi wi-cloudy" ); break;
-          case "sleet"  :  $(element).addClass("wi wi-sleet"  ); break;
-          case "rain"   :  $(element).addClass("wi wi-rain"); break;
-          case "snow"   :  $(element).addClass("wi wi-snow"); break;
-          case "wind"   :  $(element).addClass("wi wi-windy"); break;
-          case "hail"   :  $(element).addClass("wi wi-hail"); break;
-          case "fog"    :  $(element).addClass("wi wi-fog"); break;
+          case "partly-cloudy-night":  $("#icon").addClass("wi wi-night-partly-cloudy"); break;
+          case "partly-cloudy-day"  :  $("#icon").addClass("wi wi-day-cloudy-high"); break;
+          case "thunderstorm"       :  $("#icon").addClass("wi wi-thunderstorm"); break;
+          case "clear-night"        :  $("#icon").addClass("wi wi-night-clear"); break;
+          case "clear-day"          :  $("#icon").addClass("wi wi-day-sunny"); break;
+          case "tornado":  $("#icon").addClass("wi wi-tornado"); break;
+          case "cloudy" :  $("#icon").addClass("wi wi-cloudy" ); break;
+          case "sleet"  :  $("#icon").addClass("wi wi-sleet"  ); break;
+          case "rain"   :  $("#icon").addClass("wi wi-rain"); break;
+          case "snow"   :  $("#icon").addClass("wi wi-snow"); break;
+          case "wind"   :  $("#icon").addClass("wi wi-windy"); break;
+          case "hail"   :  $("#icon").addClass("wi wi-hail"); break;
+          case "fog"    :  $("#icon").addClass("wi wi-fog"); break;
         }
         return nextIcon;
       }
@@ -102,7 +98,6 @@
         });    
       }
 
-      // -- TODO: Make a Critical Section 
       function updateWeather (data){
         // -- replace downloading icon with correct weather icon 
         var temperature = data.currently.apparentTemperature;
@@ -121,57 +116,27 @@
         $("#temperature").append(farh);
 
         // -- make information visible to screen
-        $("#icon").fadeIn(500);
-        $("#summary").fadeIn(500);
-        $("#temperature").fadeIn(500);
+        $("#icon").fadeIn(2000);
+        $("#summary").fadeIn(2000);
+        $("#temperature").fadeIn(2000);
       }
 
       $(document).ready(function(){
         // -- Fetch Geo Data and Display Progress Bar
-        var lat, lng;
-        var geocoder = new google.maps.Geocoder();
+        var lat, lon;
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-							function(position) {
+          navigator.geolocation.getCurrentPosition(function(position) {
               // -- display progess (A bit of a hack - but the user needs something to look at)
               $(".progress-bar").animate({width:'100%'}, "slow");
               $(".progress").fadeOut(2000);
               lat = position.coords.latitude;
-              lng = position.coords.longitude;
+              lon = position.coords.longitude;
 
               // --  swap out icon and fetch weather -- nested callback
               $("#icon").fadeOut(2000, function(){
-                fetchWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng);
+                fetchWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lon);
               });
-
-
-              // -- Display City, State info to nav-bar
-              var latlng = new google.maps.LatLng(lat, lng);
-              geocoder.geocode({'latLng': latlng}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                  if (results[1]) {
-                   //formatted address
-                    var formatted_address = results[0].formatted_address.split(", ");
-                    cityState = formatted_address[1] + ", " + formatted_address[2]; 
-                    $(".masthead-brand").html(cityState);
-                    console.log(cityState);
-                    $(".masthead-brand").fadeIn(2000);
-
-                  } else {
-                    alert("No results found");
-                  }
-                } else {
-                    alert("Geocoder failed due to: " + status);
-                }
-              });
-
-            }, 
-              function(){
-                $(".progress").fadeOut(1000);
-                $("#icon").fadeOut(1000, function(){
-                  alert("Geo-Location Failed.");
-                });
-						});
+            });
         }
       });
     </script>
