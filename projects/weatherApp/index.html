@@ -54,8 +54,8 @@
               <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width:10%"> </div>
             </div>
             <!-- Summary and Temperature -->
-            <div id="summary" class="lead" style="font-size:24px; padding-top:18px;"> </div>
-            <div id="temperature" class="cover-heading" style="padding-left: 10px; font-size:48px; font-weight:bold;"> </div>
+            <div id="summary" class="lead" style="font-size:24px; padding-top:18px; display:none;"> </div>
+            <div id="temperature" class="cover-heading" style="padding-left: 10px; font-size:48px; font-weight:bold; display:none;"> </div>
             <div id="curTemp" class="cover-heading" style="display:none; color:#777; font-weight:bold; font-size:16px;"></div>
           </div>
         </div>
@@ -67,29 +67,31 @@
     <!-- js here (as opposed to an external script.js) for quick referencing -->
 
     <script>
-      function swapIcon(element, prevIcon, nextIcon){
-        // -- TODO: change to map/Object
-        $(element).removeClass(prevIcon);
-        switch(nextIcon){
-          case "partly-cloudy-night":  $(element).addClass("wi wi-night-partly-cloudy"); break;
-          case "partly-cloudy-day"  :  $(element).addClass("wi wi-day-cloudy-high"); break;
-          case "thunderstorm"       :  $(element).addClass("wi wi-thunderstorm"); break;
-          case "clear-night"        :  $(element).addClass("wi wi-night-clear"); break;
-          case "clear-day"          :  $(element).addClass("wi wi-day-sunny"); break;
-          case "tornado":  $(element).addClass("wi wi-tornado"); break;
-          case "cloudy" :  $(element).addClass("wi wi-cloudy" ); break;
-          case "sleet"  :  $(element).addClass("wi wi-sleet"  ); break;
-          case "rain"   :  $(element).addClass("wi wi-rain"); break;
-          case "snow"   :  $(element).addClass("wi wi-snow"); break;
-          case "wind"   :  $(element).addClass("wi wi-windy"); break;
-          case "hail"   :  $(element).addClass("wi wi-hail"); break;
-          case "fog"    :  $(element).addClass("wi wi-fog"); break;
-        }
-        return nextIcon;
+
+    var wiIcon = {   "partly-cloudy-night":  "wi wi-night-partly-cloudy",
+                      "partly-cloudy-day" :  "wi wi-day-cloudy-high",
+                      "thunderstorm"      :  "wi wi-thunderstorm",
+                      "clear-night"       :  "wi wi-night-clear",
+                      "clear-day"         :  "wi wi-day-sunny",
+                      "download"          :  "wi wi-cloud-down",
+                      "tornado":  "wi wi-tornado",
+                      "cloudy":  "wi wi-cloudy" ,
+                      "sleet" :  "wi wi-sleet"  ,
+                      "rain"  :  "wi wi-rain",
+                      "snow"  :  "wi wi-snow",
+                      "wind"  :  "wi wi-windy",
+                      "hail"  :  "wi wi-hail",
+                      "fog"   :  "wi wi-fog"
       }
 
-      function fetchWeather(API_Url){
-        // -- make API call -- no keyless weather API available 
+
+      function swapIcon(element, prevIcon, nextIcon){
+        $(element).removeClass(wiIcon[prevIcon]);
+        $(element).addClass(wiIcon[nextIcon]);
+      }
+
+      function getWeather(API_Url){
+        // -- make API call: no keyless weather API available 
         $.ajax({
           url : API_Url,
           dataType: "jsonp",
@@ -97,38 +99,28 @@
         });    
       }
 
-      // -- TODO: Make a Critical Section 
       function updateWeather (data){
         // -- replace downloading icon with correct weather icon 
         var temperature = data.currently.apparentTemperature;
         var summary = data.hourly.summary;
 
-        swapIcon("#icon", "wi wi-cloud-down", data.hourly.icon);
+        swapIcon("#icon", "download" , data.hourly.icon);
         
-        // -- quick hack to fade summary and temp in 
-        // TODO: Make these a group (if possible)
-        $("#summary").fadeOut(0);
-        $("#temperature").fadeOut(0);
-        $("#getWeather").fadeOut(2000);
-
+        // TODO: make function that takes map (called publishWeather)
         // -- append the temperature data to screen
-        // TODO: Make these a group or make function that takes list
+        $("#getWeather").fadeOut(2000);
         var farh = '<i style="font-size: 64px; padding-left:10px;" class="wi wi-fahrenheit"><//i>' 
         $("#summary").append(summary);
         $("#temperature").append(temperature);
         $("#temperature").append(farh);
         $("#curTemp").append("CURRENTLY")
-
         // -- make information visible to screen
-        // TODO: Make these a group or make function that takes list
-        $("#icon").fadeIn(500);
-        $("#summary").fadeIn(500);
-        $("#temperature").fadeIn(500);
-        $("#curTemp").fadeIn(500);
+        $("#icon,#summary,#temperature,#curTemp").fadeIn(500);
+
+
       }
 
-    // -- Quick and Dirty: Need to use $("...").html(), then $("...").append(); 
-    var runOnce = false;
+    var runOnce = false; // -- Quick and Dirty: Need to use $("...").html(), then $("...").append(); 
     $(document).ready(function(){
       $(".cover-heading").click(function(){
         // -- Fetch Geo Data and Display Progress Bar
@@ -143,18 +135,14 @@
 							function(position) {
               // -- display progess (A bit of a hack - but the user needs something to look at)
               $(".progress-bar").animate({width:'100%'}, "fast");
-              $(".progress").fadeOut(2000);
-              $("#getWeather").fadeOut(2000);
-              $("small").fadeOut(2000);
+              $(".progress,#getWeather,small").fadeOut(2000);
               lat = position.coords.latitude;
               lng = position.coords.longitude;
 
-              // --  swap out icon and fetch weather -- nested callback
               $("#icon").fadeOut(2000, function(){
+                // --  swap out icon and get weather: nested callback
                 $(".progress").hide();
-                //fade out function
-                fetchWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng);
-                //fade in function
+                getWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng);
               });
 
 
@@ -175,12 +163,9 @@
                     alert("Geocoder failed due to: " + status);
                 }
               });
-
             }, 
               function(){
-                $(".progress").fadeOut(1000);
-                $("small").fadeOut(1000);
-                $("#icon").fadeOut(1000, function(){
+                $(".progress,small,#icon").fadeOut(1000, function(){
                   alert("Geo-Location Failed.");
                 });
 						});
