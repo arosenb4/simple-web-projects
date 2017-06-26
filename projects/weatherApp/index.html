@@ -67,7 +67,6 @@
     <!-- js here (as opposed to an external script.js) for quick referencing -->
 
     <script>
-
       function swapIcon(element, prevIcon, nextIcon){
         // -- TODO: change to map/Object
         $(element).removeClass(prevIcon);
@@ -107,11 +106,13 @@
         swapIcon("#icon", "wi wi-cloud-down", data.hourly.icon);
         
         // -- quick hack to fade summary and temp in 
+        // TODO: Make these a group (if possible)
         $("#summary").fadeOut(0);
         $("#temperature").fadeOut(0);
         $("#getWeather").fadeOut(2000);
 
         // -- append the temperature data to screen
+        // TODO: Make these a group or make function that takes list
         var farh = '<i style="font-size: 64px; padding-left:10px;" class="wi wi-fahrenheit"><//i>' 
         $("#summary").append(summary);
         $("#temperature").append(temperature);
@@ -119,12 +120,12 @@
         $("#curTemp").append("CURRENTLY")
 
         // -- make information visible to screen
+        // TODO: Make these a group or make function that takes list
         $("#icon").fadeIn(500);
         $("#summary").fadeIn(500);
         $("#temperature").fadeIn(500);
         $("#curTemp").fadeIn(500);
       }
-
 
     // -- Quick and Dirty: Need to use $("...").html(), then $("...").append(); 
     var runOnce = false;
@@ -151,7 +152,9 @@
               // --  swap out icon and fetch weather -- nested callback
               $("#icon").fadeOut(2000, function(){
                 $(".progress").hide();
+                //fade out function
                 fetchWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng);
+                //fade in function
               });
 
 
