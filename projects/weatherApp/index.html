@@ -55,14 +55,8 @@
             </div>
             <!-- Summary and Temperature -->
             <div id="summary" class="lead" style="font-size:24px; padding-top:18px;"> </div>
-            <div id="curTemp" class="lead" style="font-size:24px; padding-top:18px; display:none;"> Currently: </div>
             <div id="temperature" class="cover-heading" style="padding-left: 10px; font-size:48px; font-weight:bold;"> </div>
-          </div>
-          <!-- Footer and copyright -->
-          <div class="mastfoot" style="bottom:0; position:fixed;">
-            <div class="inner">
-              <p> &copy; 2017 Adam Rosenbaum</p>
-            </div>
+            <div id="curTemp" class="cover-heading" style="display:none; color:#777; font-weight:bold"></div>
           </div>
         </div>
       </div>
@@ -122,6 +116,7 @@
         $("#summary").append(summary);
         $("#temperature").append(temperature);
         $("#temperature").append(farh);
+        $("#curTemp").append("CURRENTLY")
 
         // -- make information visible to screen
         $("#icon").fadeIn(500);
@@ -146,7 +141,7 @@
           navigator.geolocation.getCurrentPosition(
 							function(position) {
               // -- display progess (A bit of a hack - but the user needs something to look at)
-              $(".progress-bar").animate({width:'100%'}, "slow");
+              $(".progress-bar").animate({width:'100%'}, "fast");
               $(".progress").fadeOut(2000);
               $("#getWeather").fadeOut(2000);
               $("small").fadeOut(2000);
