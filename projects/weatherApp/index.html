@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<!-- TODO: Refactor CSS -->
+<!-- TODO: Refactor CSS
+         : Customize Facebook share message
+         :  
+-->
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -9,7 +12,7 @@
     <meta name="description" content="">
     <meta name="author" content="Adam Rosenbaum">
 
-    <title>Your Weather Outlook</title>
+    <title>Local Weather Outlook</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -24,6 +27,16 @@
 
   </head>
   <body>
+
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
     <div class="site-wrapper">
       <div class="site-wrapper-inner">
         <div class="cover-container">
@@ -37,8 +50,7 @@
                   <div class="btn-group">
                     <!-- TODO: Fix social media share option -->
                     <a id="twitter" href="http://twitter.com/home?status=SHAREMESSAGE" title="Share on Twitter" target="_blank" class="btn btn-md btn-twitter disabled"><i class="fa fa-twitter"></i> Twitter</a>
-                    <a id="facebook" href="https://www.facebook.com/sharer/sharer.php?u=SHAREMESSAGE" title="Share on Facebook" target="_blank" class="btn btn-facebook disabled"><i class="fa fa-facebook"></i> Facebook</a>
-                    <a id="linkedin" href="http://www.linkedin.com/shareArticle?mini=true&url=&title=&summary=SHAREMESSAGE" title="Share on LinkedIn" target="_blank" class="btn btn-linkedin disabled"><i class="fa fa-linkedin"></i> LinkedIn</a>
+                    <a id="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Farosenb4.github.io%2Fsimple-web-projects%2Fprojects%2FweatherApp%2Findex.html&amp;src=sdkpreparse" title="Share on Facebook" target="_blank" class="btn btn-facebook disabled fb-xfbml-parse-ignore"><i class="fa fa-facebook"></i> Facebook</a>
                     </div>
                   </div>
               </nav>
@@ -133,7 +145,7 @@
             var formatted_address = results[0].formatted_address.split(", ");
             cityState = formatted_address[1] + ", " + formatted_address[2]; 
 
-            // TODO: enforce mechanism before policy here
+            // TODO: enforce mechanism before policy here (aka decouple this)
             // change the navbar title to "City, State Zip"
             $(".masthead-brand").html(cityState);
             $(".masthead-brand").fadeIn(2000);
@@ -155,6 +167,9 @@
         // remove progress bar (to prevent flicker)
         $(".progress").hide(); 
         UpdateAndPublishWeather(position.coords.latitude, position.coords.longitude);
+
+        //enable social media sharing
+        $(".btn-facebook,.btn-twitter").removeClass("disabled");
       });
 
       // then update city, state, zip in nav-bar 
@@ -179,6 +194,13 @@
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition( positionFound, positionNotFound);
         }
+
+				$(".btn-twitter").click(function(){
+					// Opens a pop-up with twitter sharing dialog
+					var text =  $("#temperature").text() + " °F - '" +  $("#summary").text() + "'"; 
+					//window.open('http://twitter.com/share?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
+					window.open('http://twitter.com/share?&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
+				});
       });
     });
 
