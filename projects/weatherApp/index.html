@@ -155,6 +155,7 @@
 
               // --  swap out icon and fetch weather -- nested callback
               $("#icon").fadeOut(2000, function(){
+                $("progress").hide();
                 fetchWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng);
               });
 
