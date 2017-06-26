@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TODO: Refactor Code -->
+<!-- TODO: Refactor CSS -->
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="Adam Rosenbaum">
 
-    <title>Your local weather</title>
+    <title>Your Weather Outlook</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -65,10 +65,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 		<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAnm0jO51BZVn5kFO49OnQlDOLttodBnFY"></script>
     <!-- js here (as opposed to an external script.js) for quick referencing -->
-
     <script>
-
-    var wiIcon = {   "partly-cloudy-night":  "wi wi-night-partly-cloudy",
+    var weatherIcon = {   "partly-cloudy-night":  "wi wi-night-partly-cloudy",
                       "partly-cloudy-day" :  "wi wi-day-cloudy-high",
                       "thunderstorm"      :  "wi wi-thunderstorm",
                       "clear-night"       :  "wi wi-night-clear",
@@ -82,96 +80,108 @@
                       "wind"  :  "wi wi-windy",
                       "hail"  :  "wi wi-hail",
                       "fog"   :  "wi wi-fog"
-      }
+    }
+
+    function UpdateAndPublishWeather(lat, lng){
+      // use darksky web api to acquire forecast then update the weather
+      var API_Url = "https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng; // no keyless weather API available 
+      $.ajax({
+        url : API_Url,
+        dataType: "jsonp",
+        success: updateWeather 
+      });    
+    }
+
+    function getForecast (data){
+      //aggregate required fields from data object (google geolocation object)
+      return { icon: data.hourly.icon, summary: data.hourly.summary, temperature: data.currently.apparentTemperature }
+    }
+
+    function updateWeather(data){
+      // get the forecast, swap the icon, & display weather to user
+      var forecast = getForecast(data);
+      swapWeatherIcon("#icon", "download" , forecast.icon);
+      publishWeather(forecast.summary, forecast.temperature);
+    }
+
+    function swapWeatherIcon(element, prevIcon, nextIcon){
+      // remove previous icon and replace with new icon
+      $(element).removeClass(weatherIcon[prevIcon]);
+      $(element).addClass(weatherIcon[nextIcon]);
+    }
+
+    function publishWeather(summary, temperature){
+      // publish temperature and summary forecast to screen
+      var farh = '<i style="font-size: 64px; padding-left:10px;" class="wi wi-fahrenheit"><//i>' 
+      $("#getWeather").fadeOut(2000);
+      $("#summary").html(summary);
+      $("#temperature").html(temperature);
+      $("#temperature").append(farh);
+      $("#curTemp").html("CURRENTLY")
+      $("#icon,#summary,#temperature,#curTemp").fadeIn(500);
+    }
 
 
-      function swapIcon(element, prevIcon, nextIcon){
-        $(element).removeClass(wiIcon[prevIcon]);
-        $(element).addClass(wiIcon[nextIcon]);
-      }
+    function displayCityState(lat, lng){
+     //get formatted address from google maps given lat/lng
 
-      function getWeather(API_Url){
-        // -- make API call: no keyless weather API available 
-        $.ajax({
-          url : API_Url,
-          dataType: "jsonp",
-          success: updateWeather //forward reference to fxn 
-        });    
-      }
+      var latlng = new google.maps.LatLng(lat, lng);
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({'latLng': latlng}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          if (results[1]) {
+            var formatted_address = results[0].formatted_address.split(", ");
+            cityState = formatted_address[1] + ", " + formatted_address[2]; 
 
-      function updateWeather (data){
-        // -- replace downloading icon with correct weather icon 
-        var temperature = data.currently.apparentTemperature;
-        var summary = data.hourly.summary;
+            // TODO: enforce mechanism before policy here
+            // change the navbar title to "City, State Zip"
+            $(".masthead-brand").html(cityState);
+            $(".masthead-brand").fadeIn(2000);
+          } else {
+            alert("No results found");
+          }
+        } else {
+            alert("Geocoder failed due to: " + status);
+        }
+      });
+    }
+    function positionFound(position) {
+      // display progress (user needs something to look at)
+      $(".progress-bar").animate({width:'100%'}, "fast");
+      $(".progress,#getWeather,small").fadeOut(2000);
 
-        swapIcon("#icon", "download" , data.hourly.icon);
-        
-        // TODO: make function that takes map (called publishWeather)
-        // -- append the temperature data to screen
-        $("#getWeather").fadeOut(2000);
-        var farh = '<i style="font-size: 64px; padding-left:10px;" class="wi wi-fahrenheit"><//i>' 
-        $("#summary").append(summary);
-        $("#temperature").append(temperature);
-        $("#temperature").append(farh);
-        $("#curTemp").append("CURRENTLY")
-        // -- make information visible to screen
-        $("#icon,#summary,#temperature,#curTemp").fadeIn(500);
+      // fade the download icon out while updating/publishing weather
+      $("#icon").fadeOut(2000, function(){
+        // remove progress bar (to prevent flicker)
+        $(".progress").hide(); 
+        UpdateAndPublishWeather(position.coords.latitude, position.coords.longitude);
+      });
 
+      // then update city, state, zip in nav-bar 
+      displayCityState(position.coords.latitude, position.coords.longitude);
+    }
 
-      }
+    function positionNotFound(){
+      // User denied access to device location 
+      $(".progress,small,#icon").fadeOut(1000, function(){
+        alert("Geo-Location Failed.");
+      });
+    }
 
-    var runOnce = false; // -- Quick and Dirty: Need to use $("...").html(), then $("...").append(); 
+    var runOnce = false; // -- Quick and Dirty 
     $(document).ready(function(){
-      $(".cover-heading").click(function(){
-        // -- Fetch Geo Data and Display Progress Bar
+      $(".wi.wi-cloud-down").click(function(){
         if(runOnce == true) return; 
         runOnce = true;
 
+        // Display Progress Bar & get geolocation (lat/lng)
         $(".progress").fadeIn(500);
-        var lat, lng;
-        var geocoder = new google.maps.Geocoder();
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-							function(position) {
-              // -- display progess (A bit of a hack - but the user needs something to look at)
-              $(".progress-bar").animate({width:'100%'}, "fast");
-              $(".progress,#getWeather,small").fadeOut(2000);
-              lat = position.coords.latitude;
-              lng = position.coords.longitude;
-
-              $("#icon").fadeOut(2000, function(){
-                // --  swap out icon and get weather: nested callback
-                $(".progress").hide();
-                getWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng);
-              });
-
-
-              // -- Display City, State info to nav-bar
-              var latlng = new google.maps.LatLng(lat, lng);
-              geocoder.geocode({'latLng': latlng}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                  if (results[1]) {
-                   //formatted address
-                    var formatted_address = results[0].formatted_address.split(", ");
-                    cityState = formatted_address[1] + ", " + formatted_address[2]; 
-                    $(".masthead-brand").html(cityState);
-                    $(".masthead-brand").fadeIn(2000);
-                  } else {
-                    alert("No results found");
-                  }
-                } else {
-                    alert("Geocoder failed due to: " + status);
-                }
-              });
-            }, 
-              function(){
-                $(".progress,small,#icon").fadeOut(1000, function(){
-                  alert("Geo-Location Failed.");
-                });
-						});
+          navigator.geolocation.getCurrentPosition( positionFound, positionNotFound);
         }
       });
     });
+
     </script>
   </body>
 </html>
