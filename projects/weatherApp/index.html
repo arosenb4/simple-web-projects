@@ -142,7 +142,7 @@
 							function(position) {
               // -- display progess (A bit of a hack - but the user needs something to look at)
               $(".progress-bar").animate({width:'100%'}, "fast");
-              $(".progress").fadeOut(2000);
+              $(".progress").fadeOut(2000, function(){$("progress").hide();});
               $("#getWeather").fadeOut(2000);
               $("small").fadeOut(2000);
               lat = position.coords.latitude;
@@ -150,7 +150,6 @@
 
               // --  swap out icon and fetch weather -- nested callback
               $("#icon").fadeOut(2000, function(){
-                $("progress").hide();
                 fetchWeather("https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng);
               });
 
