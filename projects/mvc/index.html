@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Simplified Model View Controller</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <!-- Local CSS -->
+  <link rel="stylesheet" href="../../css/styles.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+</head>
+<body>
+  <div class="container">
+		<div class="header clearfix">
+			<nav>
+				<ul class="nav nav-pills pull-right">
+					<li role="presentation" class="active"><a href="../../index.html">Home</a></li>
+				</ul>
+			</nav>
+			<h3 class="text-muted">Simple Web Projects</h3>
+		</div>
+
+		<div class="jumbotron">
+			<h2>Model View Controller</h2>
+			<p class="lead"> Simplified Model View Controller example to select a pizza size. This example does not facilitate the usage of a database. For a walkthrough <a href="#" target="_blank">Click Here</a>.</p>
+		</div>
+		<hr />
+		<div class="row marketing js-container">
+      <center>
+        <div class="h2 js-output-container" style="margin-top:24px;">small</div>
+
+        <table class="js-size-radio" style="margin-top:24px;">
+          <tr> <td> <input type="radio" id="radio-small"  name="pizza-radio" value="small" checked="true"/>   Small  </td></tr>
+          <tr> <td> <input type="radio" id="radio-medium" name="pizza-radio" value="medium"/>  Medium </td></tr>
+          <tr> <td> <input type="radio" id="radio-large"  name="pizza-radio" value="large"/>   Large  </td></tr>
+        </table>
+
+        <select class="js-size-select form-control" style="margin-top:36px; width:72px;">
+          <option value="small">Small </option>
+          <option value="medium">Medium </option>
+          <option value="large">Large </option>
+        </select>
+      </center>
+		</div>
+		<footer class="footer">
+			<p>&copy; 2017 Adam Rosenbaum</p>
+		</footer>
+	</div> <!-- /container -->
+
+  <!-- js here (as opposed to an external script.js) for quick referencing -->
+<script>
+$(document).ready(function(){
+
+// Event: Observer/Listener interface
+// The Views register with the Model through this interface
+var Event = function (sender) {
+  this._sender = sender;
+  this._listeners = [];
+}
+Event.prototype = {
+  attach: function (listener) {
+    // Append Observer/Listener
+    this._listeners.push(listener);
+  },
+  notify: function (args) {
+    // The Model notifies the Observers/Listeners concerning state changes
+    for (var i = 0; i < this._listeners.length; i += 1) {
+      this._listeners[i](this._sender, args);
+    }
+  }
+};
+
+// The Model: Maintains Application State
+var SizeModel = function () {
+   // The Model-Observer/Listener interface
+   this.size = null;
+   this.getSizeEvent = new Event(this);
+ };
+ SizeModel.prototype = {
+   getSize: function (size) {
+     // The Model notifies the Views though
+     // the Listener Interface concerning state changes
+     this.size = { sizeName: size };
+     this.getSizeEvent.notify();
+   },
+   getSizes: function () {
+     // The Model implements a query method for the Views
+     // to access (read-only) the Model state
+     return this.size;
+   },
+ };
+
+// The View: The User Interface
+var SizeView = function (model) {
+  this.model = model;
+  this.getSizeEvent = new Event(this);
+  this.init();
+};
+SizeView.prototype = {
+  init: function () {
+    this.addViewComponents()
+        .registerWithModel()
+        .registerWithController();
+  },
+  addViewComponents: function () {
+    // cache the container object
+    this.$container = $('.js-container');
+
+    // the output element
+    this.$outputContainer = this.$container.find('.js-output-container');
+
+    // the select element
+    this.$getSizeSelect = this.$container.find('.js-size-select');
+    this.$sizeSelect    = this.$container.find('.js-size-select');
+
+    // the radio element
+    this.$getSizeRadio = this.$container.find('.js-size-radio');
+    this.$sizeRadio    = this.$container.find('.js-size-radio');
+    this.radioChoice = {
+        "small" : "#radio-small",
+        "medium" : "#radio-medium",
+        "large" : "#radio-large",
+        "selected" : "input[name=pizza-radio]:checked"
+    };
+
+    return this;
+  },
+  registerWithModel: function () {
+    // analogous to pointers to functions
+    this.getSizeHandler = this.getSize.bind(this);
+    this.getSizeSelectHandler = this.getSizeSelect.bind(this);
+    this.getSizeRadioHandler = this.getSizeRadio.bind(this);
+
+    return this;
+  },
+  registerWithController: function () {
+    //The Views interface to the Controller
+    this.$getSizeSelect.on('change', this.getSizeSelectHandler);
+    this.$getSizeRadio.on('change', this.getSizeRadioHandler);
+
+    // The Model query-method for the View
+    this.model.getSizeEvent.attach(this.getSizeHandler);
+
+    return this;
+  },
+  ////////////////////////////////////////////////////////////
+  // The View notifies the Model through the Observer/Listener
+  // interface of changes to made in the Model
+  getSizeSelect: function () {
+    this.getSizeEvent.notify({ size: this.$sizeSelect.val() });
+  },
+  getSizeRadio: function(){
+    this.getSizeEvent.notify({ size: $(this.radioChoice.selected).val() });
+  },
+  ////////////////////////////////////////////////////////////
+  show: function () {
+    this.updateView();
+  },
+  updateView: function () {
+    // update each view with the current state (if a change has occured)
+    var size = this.model.getSizes();
+    var radioChoice = this.radioChoice;
+    var $outputContainer = this.$outputContainer;
+
+    // update output container
+    $outputContainer.html('');
+    $outputContainer.append('<div>' +  size.sizeName + '<//div>');
+
+    // update Radio View
+    $(radioChoice[size.sizeName]).prop('checked', true);
+
+    // update Select View
+    this.$sizeSelect.val(size.sizeName)
+  },
+  getSize: function () {
+    this.show();
+  },
+};
+
+// The Controller: How the View notifies the Model changes have occurred
+var SizeController = function (model, view) {
+  this.model = model;
+  this.view = view;
+  this.init();
+};
+SizeController.prototype = {
+  init: function () {
+    this.registerWithModel()
+        .registerWithView();
+  },
+  registerWithModel: function () {
+    this.getSizeHandler = this.getSize.bind(this);
+    return this;
+  },
+  registerWithView: function () {
+    this.view.getSizeEvent.attach(this.getSizeHandler);
+    return this;
+  },
+  getSize: function (sender, args) {
+    this.model.getSize(args.size);
+  },
+};
+
+var model = new SizeModel(),
+view = new SizeView(model),
+controller = new SizeController(model, view);
+
+
+});
+
+</script>
+
+
+</body>
+</html>
+
