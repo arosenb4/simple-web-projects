@@ -1,4 +1,4 @@
-
+//TODO: reformat code
 availableTags = [
     "bubble sort",
     "cocktail shaker sort",
@@ -9,11 +9,9 @@ availableTags = [
     "quicksort",
     "bogosort",
     "stooge sort",
-    "hybrid",
     "flashsort",
     "introsort",
     "timsort",
-    "insertion sorts",
     "insertion sort",
     "library sort",
     "patience sorting",
@@ -22,7 +20,6 @@ availableTags = [
     "cycle sort",
     "merge sort",
     "strand sort",
-    "non-comparison sorts",
     "bead sort",
     "bucket sort",
     "burstsort",
@@ -34,12 +31,10 @@ availableTags = [
     "heapsort",
     "selection sort",
     "smoothsort",
-    "other",
     "bitonic sorter",
     "pancake sorting",
     "spaghetti sort",
     "topological sort",
-    "unknown class",
     "samplesort"
 ];
 
