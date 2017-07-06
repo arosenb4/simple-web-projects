@@ -1,0 +1,13 @@
+
+.ui-helper-hidden-accessible{
+    opacity: 0;
+}
+
+.input-group{
+    padding-top:24px;
+    margin-top:24px;
+}
+
+#ui-id-1{
+    list-style-type: none;
+}
