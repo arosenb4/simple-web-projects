@@ -1,4 +1,5 @@
 //TODO: refactor code
+//    : remove id elements from functions
 availableTags = [
     "bubble sort",
     "cocktail shaker sort",
@@ -114,14 +115,17 @@ searchBar.setAvailableTags(availableTags);
 searchBar.toggleSuggestion("ON");
 
 $(searchBar.searchBtn).on("click", function(){
+     $("#ui-id-1").animate({ opacity : '0.0'}, 0);
       searchBar.getWikiRequest();
       searchBar.toggleResult("ON");
 });
 $(searchBar.searchBar).on("keyup", function(e){
+   $("#ui-id-1").animate({ opacity : '1.0'}, 300);
     searchBar.toggleResult("OFF");
     var key = e.which;
     var enter = 13, backspace = 8;
     if(key==enter){
+        $("#ui-id-1").animate({ opacity : '0.0'}, 0);
         searchBar.getWikiRequest();
         searchBar.toggleResult("ON");
        return;

@@ -15,4 +15,13 @@
 #ui-id-1{
     list-style-type: none;
     padding-left: 8px;
+    margin-top: 0px;
+    background-color: #e3e3e3 ;
+    border-radius: 4px;
+    padding: 4px;
+    width: 200px;
+}
+
+li:hover{
+        background-color: rgba(255, 255, 255, 0.45);
 }
