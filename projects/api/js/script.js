@@ -1,8 +1,7 @@
-//TODO: reformat code
+//TODO: refactor code
 availableTags = [
     "bubble sort",
     "cocktail shaker sort",
-    "bidirectional bubble sort",
     "comb sort",
     "gnome sort",
     "odd-even sort",
@@ -15,26 +14,20 @@ availableTags = [
     "insertion sort",
     "library sort",
     "patience sorting",
-    "shell sort",
-    "tree sort (binary tree sort)",
     "cycle sort",
     "merge sort",
-    "strand sort",
     "bead sort",
     "bucket sort",
     "burstsort",
     "counting sort",
     "pigeonhole sort",
-    "postman sort",
     "radix sort",
-    "selection sorts",
     "heapsort",
     "selection sort",
     "smoothsort",
     "bitonic sorter",
     "pancake sorting",
     "spaghetti sort",
-    "topological sort",
     "samplesort"
 ];
 
@@ -101,14 +94,13 @@ SearchBar.prototype = {
                             $("#title").html(data["query"]["pages"][pageId]["title"] + "<br  //>");
                             $("#link").attr("href", wikiPage["query"]["pages"][pageId]["canonicalurl"]);
                             var extract = data["query"]["pages"][pageId]["extract"] + "<br //>".toLowerCase();
-                            if(extract.length - searchTerm.length == 21 && isSortingAlgo == true){
-                                $("#extract").html(searchTerm + ", hmmm... seems familiar. Try this.");
-                            }
-                            else if(isSortingAlgo==true){
+
+                            if(isSortingAlgo==true){
                                 $("#extract").html(extract)
-                            }else{
-                                $("#extract").html(searchTerm + ", hmmm... I've never heard of that one. Try this.");
+                                return;
                             }
+
+                            $("#extract").html(searchTerm + ", hmmm... seems familiar. Try this.");
                         }
                     });
                 });
@@ -119,19 +111,17 @@ SearchBar.prototype = {
 
 searchBar = new SearchBar("#search-bar", ".search-btn", "#search-results", "#ui-id-1");
 searchBar.setAvailableTags(availableTags);
+searchBar.toggleSuggestion("ON");
 
 $(searchBar.searchBtn).on("click", function(){
-      searchBar.toggleSuggestion("OFF");
       searchBar.getWikiRequest();
       searchBar.toggleResult("ON");
 });
 $(searchBar.searchBar).on("keyup", function(e){
     searchBar.toggleResult("OFF");
-    searchBar.toggleSuggestion("ON");
     var key = e.which;
     var enter = 13, backspace = 8;
     if(key==enter){
-        searchBar.toggleSuggestion("OFF");
         searchBar.getWikiRequest();
         searchBar.toggleResult("ON");
        return;
@@ -139,12 +129,8 @@ $(searchBar.searchBar).on("keyup", function(e){
 });
 
 $(searchBar.inputElement).on('focus', function(){
-    searchBar.toggleResult("OFF");
+     searchBar.toggleResult("OFF");
     if(searchBar.getSearchTerm() != '') searchBar.toggleSuggestion("ON");
-});
-
-$(searchBar.inputElement).on('focusout', function(){
-  searchBar.toggleSuggestion("OFF");
 });
 
 

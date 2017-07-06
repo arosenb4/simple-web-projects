@@ -3,6 +3,10 @@
     opacity: 0;
 }
 
+.lead{
+    padding-top:15%;
+}
+
 .input-group{
     padding-top:24px;
     margin-top:24px;
