@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!-- TODO: Refactor CSS
-         : Customize Facebook share message
-         :  
--->
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -27,184 +23,34 @@
 
   </head>
   <body>
-
-    <div id="fb-root"></div>
-    <script>(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
-
+    <!-- navbar   -->
+    <div class="masthead clearfix">
+        <div class="inner">
+          <h3 class="masthead-brand">Current Local Weather</h3>
+          <nav>
+            <div class="nav masthead-nav">
+              <div class="btn-group">
+                <a id="twitter" href="http://twitter.com/home?status=SHAREMESSAGE" title="Share on Twitter" target="_blank" class="btn btn-md btn-twitter disabled"><i class="fa fa-twitter"></i> Twitter</a>
+                </div>
+              </div>
+          </nav>
+        </div>
+    </div>
+    <!-- weather container     -->
     <div class="site-wrapper">
       <div class="site-wrapper-inner">
         <div class="cover-container">
-
-          <!-- The Navbar components -->
-					<div class="masthead clearfix">
-            <div class="inner">
-              <h3 class="masthead-brand">Current Local Weather</h3>
-              <nav>
-                <div class="nav masthead-nav">
-                  <div class="btn-group">
-                    <!-- TODO: Fix social media share option -->
-                    <a id="twitter" href="http://twitter.com/home?status=SHAREMESSAGE" title="Share on Twitter" target="_blank" class="btn btn-md btn-twitter disabled"><i class="fa fa-twitter"></i> Twitter</a>
-                    <a id="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Farosenb4.github.io%2Fsimple-web-projects%2Fprojects%2FweatherApp%2Findex.html&amp;src=sdkpreparse" title="Share on Facebook" target="_blank" class="btn btn-facebook disabled fb-xfbml-parse-ignore"><i class="fa fa-facebook"></i> Facebook</a>
-                    </div>
-                  </div>
-              </nav>
-            </div>
-          </div>
-
-          <!-- Main Content -->
-          <div class="inner cover">
-            <!-- Icon For current weather -->
-            <h1 class="cover-heading" style="padding-bottom:24px;"><i id="icon" style="font-size: 160px; padding-top:27px;" class="wi wi-cloud-down"></i> <br /> <small>Get Weather</small></h1>
-            <div class="progress" style="display:none;">
-              <!-- Progress Bar -->
-              <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width:10%"> </div>
-            </div>
-            <!-- Summary and Temperature -->
-            <div id="summary" class="lead" style="font-size:24px; padding-top:18px; display:none;"> </div>
-            <div id="temperature" class="cover-heading" style="padding-left: 10px; font-size:48px; font-weight:bold; display:none;"> </div>
-            <div id="curTemp" class="cover-heading" style="display:none; color:#777; font-weight:bold; font-size:16px;"></div>
-          </div>
+          <div class="weather-container inner cover">
+            <h1 class="cover-heading"> <i class="weather-icon wi wi-cloud-down"></i> </h1>
+            <h2 class="weather-summary"> Download Weather </h2>
+            <h1 class="weather-temperature"></h1>
         </div>
       </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAnm0jO51BZVn5kFO49OnQlDOLttodBnFY"></script>
-    <!-- js here (as opposed to an external script.js) for quick referencing -->
-    <script>
-    var weatherIcon = {   "partly-cloudy-night":  "wi wi-night-partly-cloudy",
-                      "partly-cloudy-day" :  "wi wi-day-cloudy-high",
-                      "thunderstorm"      :  "wi wi-thunderstorm",
-                      "clear-night"       :  "wi wi-night-clear",
-                      "clear-day"         :  "wi wi-day-sunny",
-                      "download"          :  "wi wi-cloud-down",
-                      "tornado":  "wi wi-tornado",
-                      "cloudy":  "wi wi-cloudy" ,
-                      "sleet" :  "wi wi-sleet"  ,
-                      "rain"  :  "wi wi-rain",
-                      "snow"  :  "wi wi-snow",
-                      "wind"  :  "wi wi-windy",
-                      "hail"  :  "wi wi-hail",
-                      "fog"   :  "wi wi-fog"
-    }
+	<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAnm0jO51BZVn5kFO49OnQlDOLttodBnFY"></script>
+	<script type="text/javascript" src="js/script.js"></script>
 
-    function UpdateAndPublishWeather(lat, lng){
-      // use darksky web api to acquire forecast then update the weather
-      var API_Url = "https://api.darksky.net/forecast/5093acf8cf995a86fd86734ecd7dc240/" + lat + "," + lng; // no keyless weather API available 
-      $.ajax({
-        url : API_Url,
-        dataType: "jsonp",
-        success: updateWeather 
-      });    
-    }
-
-    function getForecast (data){
-      //aggregate required fields from data object (google geolocation object)
-      return { icon: data.hourly.icon, summary: data.hourly.summary, temperature: data.currently.apparentTemperature }
-    }
-
-    function updateWeather(data){
-      // get the forecast, swap the icon, & display weather to user
-      var forecast = getForecast(data);
-      swapWeatherIcon("#icon", "download" , forecast.icon);
-      publishWeather(forecast.summary, forecast.temperature);
-    }
-
-    function swapWeatherIcon(element, prevIcon, nextIcon){
-      // remove previous icon and replace with new icon
-      $(element).removeClass(weatherIcon[prevIcon]);
-      $(element).addClass(weatherIcon[nextIcon]);
-    }
-
-    function publishWeather(summary, temperature){
-      // publish temperature and summary forecast to screen
-      var farh = '<i style="font-size: 64px; padding-left:10px;" class="wi wi-fahrenheit"><//i>' 
-      $("#getWeather").fadeOut(2000);
-      $("#summary").html(summary);
-      $("#temperature").html(temperature);
-      $("#temperature").append(farh);
-      $("#curTemp").html("CURRENTLY")
-      $("#icon,#summary,#temperature,#curTemp").fadeIn(500);
-    }
-
-
-    function displayCityState(lat, lng){
-     //get formatted address from google maps given lat/lng
-
-      var latlng = new google.maps.LatLng(lat, lng);
-      var geocoder = new google.maps.Geocoder();
-      geocoder.geocode({'latLng': latlng}, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-          if (results[1]) {
-            var formatted_address = results[0].formatted_address.split(", ");
-            cityState = formatted_address[1] + ", " + formatted_address[2]; 
-
-            // TODO: enforce mechanism before policy here (aka decouple this)
-            // change the navbar title to "City, State Zip"
-            $(".masthead-brand").html(cityState);
-            $(".masthead-brand").fadeIn(2000);
-          } else {
-            alert("No results found");
-          }
-        } else {
-            alert("Geocoder failed due to: " + status);
-        }
-      });
-    }
-    function positionFound(position) {
-      // display progress (user needs something to look at)
-      $(".progress-bar").animate({width:'100%'}, "fast");
-      $(".progress,#getWeather,small").fadeOut(2000);
-
-      // fade the download icon out while updating/publishing weather
-      $("#icon").fadeOut(2000, function(){
-        // remove progress bar (to prevent flicker)
-        $(".progress").hide(); 
-        UpdateAndPublishWeather(position.coords.latitude, position.coords.longitude);
-
-        //enable social media sharing
-        $(".btn-facebook,.btn-twitter").removeClass("disabled");
-      });
-
-      // then update city, state, zip in nav-bar 
-      displayCityState(position.coords.latitude, position.coords.longitude);
-    }
-
-    function positionNotFound(){
-      // User denied access to device location 
-      $(".progress,small,#icon").fadeOut(1000, function(){
-        alert("Geo-Location Failed.");
-      });
-    }
-
-    var runOnce = false; // -- Quick and Dirty 
-    $(document).ready(function(){
-      $(".wi.wi-cloud-down").click(function(){
-        if(runOnce == true) return; 
-        runOnce = true;
-
-        // Display Progress Bar & get geolocation (lat/lng)
-        $(".progress").fadeIn(500);
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition( positionFound, positionNotFound);
-        }
-
-				$(".btn-twitter").click(function(){
-					// Opens a pop-up with twitter sharing dialog
-					var text =  $("#temperature").text() + " °F - '" +  $("#summary").text() + "'"; 
-					//window.open('http://twitter.com/share?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
-					window.open('http://twitter.com/share?&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
-				});
-      });
-    });
-
-    </script>
   </body>
 </html>
-
