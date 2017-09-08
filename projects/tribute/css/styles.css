@@ -1,0 +1,52 @@
+body, html {
+    height: 100%;
+}
+
+/* The hero image */
+.hero-image {
+    /* The image used */
+    background-image: url("../img/noam-chomsky.jpeg");
+    opacity: 0.9;
+
+    /* Set a specific height */
+    height: 64%;
+
+    /* Position and center the image to scale nicely on all screens */
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+/* Place text in the middle of the image */
+.hero-text {
+    text-align: center;
+    font-size: 28px;
+    position: relative;
+    text-shadow: 2px 2px #333;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.hero-bio{
+    padding-top:18px;
+    margin-top:18px;
+    font-size: 20px;
+    font-family: 'Cormorant Garamond', serif;
+}
+
+.quote{
+    font-style: italic;
+}
+
+.target-link{
+    font-weight: bold;
+}
+
+footer{
+    margin-top:28px;
+    padding-top:28px;
+    padding-bottom:12px;
+}
