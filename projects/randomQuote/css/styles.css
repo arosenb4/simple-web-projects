@@ -1,0 +1,75 @@
+body, html {
+    height: 100%;
+    background-color: #999;
+}
+
+.btn, .btn:hover, .btn:focus {
+    background-color: #00aced;
+    font-family: 'Fjalla One', sans-serif;
+    font-size: 20px;
+    color: white;
+    outline: none !important;
+    border-top-right-radius: 0%;
+    border-top-left-radius: 0%;
+}
+
+.author{
+    margin-top:80px;
+    padding-top: 80px;
+    margin-bottom:20px;
+    padding-bottom:20px;
+}
+
+.quote, .author{
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+}
+.quote-box{
+    background-color: white;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 2%;
+    border-bottom-left-radius: 2%;
+    box-shadow: 10px 10px 10px #555;
+}
+
+.quote-container{
+    padding-top:64px;
+    max-height:80px;
+    min-height:80px;
+}
+
+.fa-twitter {
+    background: #00aced;
+    color: white;
+    width: 64px;
+    height: 64px;
+    padding: 20px;
+    border-radius: 50%;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    margin: 5px 2px;
+    box-shadow: 6px 6px 6px grey;
+    margin-top:20px;
+    margin-right:40px;
+}
+
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
+}
