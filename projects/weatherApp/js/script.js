@@ -7,6 +7,19 @@ function debug(msg){
     }
 }
 
+var units = {
+    'Fahr' : true,
+    'Cels' : false,
+}
+
+function toCels(fahr){
+    return (fahr - 32)*(5/9);
+}
+
+function toFahr(cels){
+    return (cels * 9/5)+32;
+}
+
 var Event = function (sender) {
     this._sender = sender;
     this._listeners = [];
@@ -165,9 +178,9 @@ WeatherView.prototype = {
         this.$weatherIcon.addClass(this.model.getWeatherClass());
 
         this.$weatherSummary.html(this.model.weather.summary);
-        this.$weatherTemperature.html(this.model.weather.temperature + ' °F');
+        this.$weatherTemperature.html(this.model.weather.temperature.toFixed(1) + ' °F');
 
-        $(".btn-twitter").removeClass("disabled");
+        $(".btn-twitter, .btn-temperature").removeClass("disabled");
 
     },
     updateLocation: function () {
@@ -203,9 +216,21 @@ view = new WeatherView(model),
 controller = new WeatherController(model, view);
 
 $(".btn-twitter").click(function(){
-    // Opens a pop-up with twitter sharing dialog
-    var text =  model.weather.temperature + " - '" +  model.weather.summary + "' " + model.cityState;
+    var text =  $(".weather-temperature").text() + " - '" +  model.weather.summary + "' " + model.cityState;
     window.open('http://twitter.com/share?&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
+});
+
+$(".btn-temperature").click(function(){
+    var temp = $(".weather-temperature").text().split(' ')[0];
+    if(units.Fahr){
+        units.Fahr = false;
+        units.Cels = true;
+        $(".weather-temperature").html(toCels(temp).toFixed(1) + ' °C');
+    }else{
+        units.Cels = false;
+        units.Fahr = true;
+        $(".weather-temperature").html(toFahr(temp).toFixed(1) + ' °F');
+    }
 });
 
 });
