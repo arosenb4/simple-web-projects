@@ -48,8 +48,8 @@
 
 
             <div class="container">
-                <ul id="search-results" ng-repeat="item in result | filter: query">
-                    <li> {{item.name}} <br /> {{item.reknown}} </li>
+                <ul id="search-results" >
+                    <li ng-repeat="item in result | filter: query"> {{item.title}} </li>
                 </ul>
             </div>
         </div>
