@@ -1,0 +1,13 @@
+
+.search-group{
+    margin-top:5%;
+}
+
+#search-input{
+    margin-top:4%;
+}
+
+#search-results{
+    list-style-type: none;
+    margin-top:12%;
+}
