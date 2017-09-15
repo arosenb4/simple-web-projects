@@ -1,6 +1,13 @@
+body,
+html{
+    background-color:#CCC;
+}
 
 .search-group{
-    margin-top:5%;
+    padding-top:5%;
+    padding-bottom:5%;
+    background-color: #333;
+    color: white;
 }
 
 #search-input{
@@ -8,6 +15,19 @@
 }
 
 #search-results{
+    padding: 0;
     list-style-type: none;
-    margin-top:12%;
+    margin-top:4%;
+}
+
+#search-results > li{
+    font-size: 24px;
+    background-color: white;
+    border-radius: 4px;
+    margin: 4%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    border:2px solid #333;
+    box-shadow: 10px 10px 8px #AAA;
+
 }

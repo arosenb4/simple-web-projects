@@ -7,39 +7,39 @@ $(document).ready(function(){
 
     $searchButton.on('click', function(){
         $searchResults.html('');
-        makeRequest($searchText.val().toLowerCase());
+        makeRequest($searchText.val());
     });
 
     $randomButton.on('click', function(){
         $searchResults.html('');
-        makeRequest($searchText.val().toLowerCase());
+        makeRequest($searchText.val());
     });
 
     $searchText.on('keyup', function(e){
         if(e.keyCode === 13){
             $searchResults.html('');
-            makeRequest($searchText.val().toLowerCase());
+            makeRequest($searchText.val());
         }
     });
 
     function makeRequest(searchText){
-        var getPageIDs = WikiRequest(searchText);
+        $searchText.focus();
 
-        if(searchText === undefined){
+        if(searchText === undefined || searchText === ''){
             $searchResults.html('Random');
+            return;
         }
 
+        var getPageIDs = WikiRequest(searchText);
+
         getPageIDs(function(page){
-            for(pid in page){
-                console.log(urlFromTitle(urlify(page[pid].title)));
-            }
             for(pid in page){
                 $.getJSON(urlFromPageId(pid), function(json){
                     pids = Object.keys(json.query.pages);
                     for(var i=0; i<pids.length; i+=1){
                         var title = json.query.pages[pids[i]].title;
                         var url = json.query.pages[pids[i]].canonicalurl;
-                        $searchResults.append('<li id="'+ title +'"><a target="_blank" href="' + url + '">' + title + '</a></li>');
+                        $searchResults.append('<li class="row" id="'+ title +'"><a target="_blank" href="' + url + '">' + title + '</a></li>');
                     }
                 });
             }
