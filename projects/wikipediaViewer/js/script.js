@@ -37,7 +37,8 @@ $(document).ready(function(){
                     for(var i=0; i<pids.length; i+=1){
                         var title = json.query.pages[pids[i]].title;
                         var url = json.query.pages[pids[i]].canonicalurl;
-                        dict[title] = '<li class="row" id="'+ title +'"><a target="_blank" href="' + url + '">' + title + '</a></li>'
+                        // dict[title] = '<li class="row" id="'+ title +'"><a target="_blank" href="' + url + '">' + title + '</a></li>'
+                        dict[title] = '<a href="' + url + '"><li class="row" >' + title  + '</li></a>';
                     }
                     for(result in dict){
                         $searchResults.append(dict[result]);
