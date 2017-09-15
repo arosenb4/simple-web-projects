@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
     var $searchText = $('#search-text');
     var $randomButton = $('#random-button');
@@ -5,48 +6,41 @@ $(document).ready(function(){
     var $searchResults = $('#search-results');
 
     $searchButton.on('click', function(){
-        $searchResults.html(response($searchText.val().toLowerCase()));
+        $searchResults.html(makeRequest($searchText.val().toLowerCase()));
     });
 
     $randomButton.on('click', function(){
-        $searchResults.html(response());
+        $searchResults.html(makeRequest());
     });
 
     $searchText.on('keyup', function(e){
         if(e.keyCode === 13){
-            $searchResults.html(response($searchText.val().toLowerCase()));
+            $searchResults.html(makeRequest($searchText.val().toLowerCase()));
         }
     });
 
-    function response(searchText){
+    function makeRequest(searchText){
         var getPageIDs = WikiRequest('starwars');
 
         if(searchText === undefined){
-            return "random";
+            $searchResults.html('Random');
         }
 
-        getPageIDs(function(pageIDs){
-            pageIDs.forEach(function(id){
-                console.log(urlFromPageId(id));
-            })
+        getPageIDs(function(page){
+            for(pid in page){
+                $searchResults.append('<li>' + page[pid].title + '</li>');
+                console.log(page[pid]);
+            }
         });
-
-        return "search";
     }
 
     function WikiRequest(searchText){
         var pageURL = 'https://en.wikipedia.org/w/api.php?format=json&action=query&generator=search&gsrsearch=' + searchText + '&callback=?';
-
         return function(pageIDHandler){
-            $.getJSON(pageURL , function(data) {
-                var json = data;
-                pageIDHandler(Object.keys(json.query.pages));
+            $.getJSON(pageURL , function(json) {
+                pageIDHandler(json.query.pages);
             });
         };
-    }
-
-    function urlFromPageId(pageId){
-        return "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=info&pageids=" + pageId + "&inprop=url";
     }
 
 });
