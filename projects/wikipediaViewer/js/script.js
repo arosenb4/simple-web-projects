@@ -1,28 +1,26 @@
 
 $(document).ready(function(){
     var $searchText = $('#search-text');
-    var $randomButton = $('#random-button');
-    var $searchButton = $('#search-button');
     var $searchResults = $('#search-results');
 
-    $searchButton.on('click', function(){
-        makeRequest($searchText.val());
-    });
-
-    $randomButton.on('click', function(){
-        makeRequest($searchText.val());
-    });
+    // var $randomButton = $('#random-button');
+    // $randomButton.on('click', function(){
+    //     makeRequest($searchText.val());
+    // });
 
     $searchText.on('keyup', function(e){
         if(e.keyCode === 13){
+          console.log("Keypress");
             makeRequest($searchText.val());
         }
     });
 
-    function makeRequest(searchText){
-        $searchResults.fadeOut();
+    $('.input').on('click', function(){
         $searchResults.html('');
-        $searchText.focus();
+    });
+
+    function makeRequest(searchText){
+        $searchResults.html('');
 
         if(searchText === undefined || searchText === ''){
             return;
@@ -38,13 +36,11 @@ $(document).ready(function(){
                     for(var i=0; i<pids.length; i+=1){
                         var title = json.query.pages[pids[i]].title;
                         var url = json.query.pages[pids[i]].canonicalurl;
-                        // dict[title] = '<li class="row" id="'+ title +'"><a target="_blank" href="' + url + '">' + title + '</a></li>'
-                        dict[title] = '<a href="' + url + '"><li class="row" >' + title  + '</li></a>';
+                        dict[title] = '<div class="result"> <a id="' + i + '" href="' + url + '">' + title  + '</a></div>';
                     }
                     for(result in dict){
                         $searchResults.append(dict[result]);
                     }
-                    $searchResults.fadeIn();
                 });
             }
         });
