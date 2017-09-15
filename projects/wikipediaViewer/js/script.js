@@ -29,7 +29,6 @@ $(document).ready(function(){
         getPageIDs(function(page){
             for(pid in page){
                 $searchResults.append('<li>' + page[pid].title + '</li>');
-                console.log(url);
             }
             // $.getJSON(url, function(){
             //     console.log(json);
