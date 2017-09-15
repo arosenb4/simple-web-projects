@@ -6,16 +6,19 @@ $(document).ready(function(){
     var $searchResults = $('#search-results');
 
     $searchButton.on('click', function(){
-        $searchResults.html(makeRequest($searchText.val().toLowerCase()));
+        $searchResults.html('');
+        makeRequest($searchText.val().toLowerCase());
     });
 
     $randomButton.on('click', function(){
-        $searchResults.html(makeRequest());
+        $searchResults.html('');
+        makeRequest($searchText.val().toLowerCase());
     });
 
     $searchText.on('keyup', function(e){
         if(e.keyCode === 13){
-            $searchResults.html(makeRequest($searchText.val().toLowerCase()));
+            $searchResults.html('');
+            makeRequest($searchText.val().toLowerCase());
         }
     });
 
@@ -28,12 +31,20 @@ $(document).ready(function(){
 
         getPageIDs(function(page){
             for(pid in page){
-                $searchResults.append('<li>' + page[pid].title + '</li>');
+                $.getJSON(urlFromPageId(pid), function(json){
+                    pids = Object.keys(json.query.pages);
+                    for(var i=0; i<pids.length; i+=1){
+                        var title = json.query.pages[pids[i]].title;
+                        var url = json.query.pages[pids[i]].canonicalurl;
+                        $searchResults.append('<li><a href="' + url + '">' + title + '</a></li>');
+                    }
+                });
             }
-            // $.getJSON(url, function(){
-            //     console.log(json);
-            // });
         });
+    }
+
+    function urlFromPageId(pageId){
+        return "https://en.wikipedia.org/w/api.php?format=json&action=query&origin=*&prop=info&pageids=" + pageId + "&inprop=url";
     }
 
     function WikiRequest(searchText){
