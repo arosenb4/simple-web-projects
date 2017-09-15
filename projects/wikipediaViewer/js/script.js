@@ -36,7 +36,7 @@ $(document).ready(function(){
                     for(var i=0; i<pids.length; i+=1){
                         var title = json.query.pages[pids[i]].title;
                         var url = json.query.pages[pids[i]].canonicalurl;
-                        $searchResults.append('<li><a href="' + url + '">' + title + '</a></li>');
+                        $searchResults.append('<li><a target="_blank" href="' + url + '">' + title + '</a></li>');
                     }
                 });
             }
