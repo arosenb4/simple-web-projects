@@ -21,6 +21,7 @@ $(document).ready(function(){
 
     function makeRequest(searchText){
         $searchResults.fadeOut();
+        $searchResults.html('');
         $searchText.focus();
 
         if(searchText === undefined || searchText === ''){
