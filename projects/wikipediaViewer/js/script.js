@@ -28,12 +28,12 @@ $(document).ready(function() {
     getQueryResults($query.val().toLowerCase().replace(/^\s+/, ''));
   }
 
-
   function getQueryResults(queryVal) {
     $('ul').html('');
     if (queryVal === undefined || queryVal === '') return [];
 
     var pages;
+    var searchResults = [];
     $.getJSON(wikiReq.fromSearchText(queryVal), function(json){
       if(json.hasOwnProperty('query')){
         pages = json.query.pages;
@@ -41,10 +41,11 @@ $(document).ready(function() {
         $('ul').append('<li> ' + queryVal + ': no results found.</li>');
       }
     }).done(function(){
+      var results = [];
+      var pids = (pages !== undefined)?(Object.keys(pages)):([]);
+      var lastPid = pids[pids.length-1];
 
-      var urlPage;
-      var keys = (pages !== undefined)?(Object.keys(pages)):([]);
-      keys.forEach(function(pid){
+      pids.forEach(function(pid){
         var urlpage;
         $.getJSON(wikiReq.fromPid(pid), function(json){
           urlpage = json.query.pages;
@@ -52,11 +53,15 @@ $(document).ready(function() {
           var index = pages[pid].index;
           var title = pages[pid].title;
           var url = urlpage[pid].fullurl;
-          $('ul').append('<li id="result' + index + '"><a target="_blank" href="'+ url +'"><span class="title">' + title + '</span> </a></li>');
-        });
+          results[index-1] = '<li><a target="_blank" href="'+ url +'"><span class="title">' + title + '</span> </a></li>';
+          if(pid === lastPid){
+            for(index in results){
+              $('ul').append(results[index]);
+            }
+          }
+        });// -- done
       });
-    }).always(function(){
-      // -- sort the DOM or find alternative
+      // -- done
     });
   }// -- getQueryResults
 
