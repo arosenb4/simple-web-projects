@@ -4,6 +4,8 @@ $(document).ready(function() {
   var $randomBtn = $("#random-btn");
   var wikiReq = new WikiReq();
 
+  $.ajaxSetup({async: false});
+
   // @pre: Takes No arguments
   // @post: returns functions translating string input to wiki api call
   function WikiReq() {
@@ -41,7 +43,6 @@ $(document).ready(function() {
         $('ul').append('<li> ' + queryVal + ': no results found.</li>');
       }
     }).done(function(){
-      var results = [];
       var pids = (pages !== undefined)?(Object.keys(pages)):([]);
       var lastPid = pids[pids.length-1];
 
@@ -53,11 +54,11 @@ $(document).ready(function() {
           var index = pages[pid].index;
           var title = pages[pid].title;
           var url = urlpage[pid].fullurl;
-          results[index-1] = '<li><a target="_blank" href="'+ url +'"><span class="title">' + title + '</span> </a></li>';
+          searchResults[index-1] = '<li><a target="_blank" href="'+ url +'"><span class="title">' + title + '</span> </a></li>';
           if(pid === lastPid){
-            for(index in results){
-              $('ul').append(results[index]);
-            }
+            searchResults.forEach(function(li){
+              $('ul').append(li);
+            });
           }
         });// -- done
       });
